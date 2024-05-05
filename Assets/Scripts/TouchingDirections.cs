@@ -1,4 +1,3 @@
-using System;
 using UniRx;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ public class TouchingDirections : MonoBehaviour
     [SerializeField]
     private float ceilingDistance = 0.05f;
     [SerializeField]
-    private bool _isGrounded;
+    private bool _isGrounded = true;
     [SerializeField]
     private bool _isOnWall;
     [SerializeField]
@@ -65,7 +64,7 @@ public class TouchingDirections : MonoBehaviour
 
     void Start()
     {
-        Observable.EveryFixedUpdate()
+        Observable.Interval(System.TimeSpan.FromSeconds(0.25))
             .Subscribe(_ =>
             {
                 IsGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, groundDistance) > 0;
