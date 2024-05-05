@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
             this.hp.Value = hp;
         }).AddTo(disposables);
 
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
+        Observable.Interval(System.TimeSpan.FromSeconds(0.1f))
             .Where(_ => CanMove)
             .Where(_ => !LockVelocity)
             .Subscribe(_ =>

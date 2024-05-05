@@ -64,7 +64,11 @@ public class TouchingDirections : MonoBehaviour
 
     void Start()
     {
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25))
+        /**
+         * This needs to be executed every fixed update to check if the player is grounded, on wall, or on ceiling.
+         * We can't use Interval() here since we need this to happen in real time.
+         */
+        Observable.EveryFixedUpdate()
             .Subscribe(_ =>
             {
                 IsGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, groundDistance) > 0;
