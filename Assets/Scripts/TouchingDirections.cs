@@ -18,7 +18,7 @@ public class TouchingDirections : MonoBehaviour
     private bool _isOnWall;
     [SerializeField]
     private bool _isOnCeiling;
-    protected CapsuleCollider2D touchingCol;
+    protected Collider2D touchingCol;
     protected Animator animator;
     protected CompositeDisposable disposables;
 
@@ -58,7 +58,7 @@ public class TouchingDirections : MonoBehaviour
 
     void Awake()
     {
-        touchingCol = GetComponent<CapsuleCollider2D>();
+        touchingCol = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
         disposables = new CompositeDisposable();
     }
