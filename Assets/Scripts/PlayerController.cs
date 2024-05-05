@@ -139,6 +139,7 @@ public class PlayerController : MonoBehaviour
         damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
         coins.Value = PlayerPrefs.GetInt("Coins", 0);
+        hp.Value = 20;
     }
 
     /**
@@ -150,7 +151,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         StopShake();
-        // Again, proxy the hp value to the Damageable class
         damageable.hp.Subscribe(hp =>
         {
             this.hp.Value = hp;
