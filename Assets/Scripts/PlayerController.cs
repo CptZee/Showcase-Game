@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Collections;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UniRx;
@@ -21,6 +23,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     [Tooltip("DEBUG ONLY - DO NOT EDIT")]
     private List<Collider2D> interactables = new List<Collider2D>();
+    [SerializeField]
+    [Tooltip("The virtual camera for the screen effects for the onHit")]
+    private CinemachineVirtualCamera virtualCamera;
+    [SerializeField]
+    [Tooltip("The intensity of the screen shake for the onHit")]
+    private float shakeIntensity = 1f;
+    [Tooltip("The duration of the screen shake for the onHit")]
+    [SerializeField]
+    private float shakeTime = 0.5f;
     protected Vector2 moveInput;
     protected Rigidbody2D rb;
     protected Animator animator;
@@ -28,6 +39,9 @@ public class PlayerController : MonoBehaviour
     protected TouchingDirections touchingDirections;
     protected Damageable damageable;
     protected ParticleSystem dust;
+    protected SpriteRenderer spriteRenderer;
+    protected float timer;
+    protected CinemachineBasicMultiChannelPerlin _cbmcp;
 
     public ReactiveProperty<int> coins = new ReactiveProperty<int>();
     /**
@@ -125,6 +139,7 @@ public class PlayerController : MonoBehaviour
         touchingDirections = GetComponent<TouchingDirections>();
         dust = GetComponentInChildren<ParticleSystem>();
         damageable = GetComponent<Damageable>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         disposables = new CompositeDisposable();
         coins.Value = PlayerPrefs.GetInt("Coins", 0);
     }
@@ -137,6 +152,7 @@ public class PlayerController : MonoBehaviour
      */
     void Start()
     {
+        StopShake();
         // Again, proxy the hp value to the Damageable class
         damageable.hp.Subscribe(hp =>
         {
@@ -158,6 +174,22 @@ public class PlayerController : MonoBehaviour
             {
                 StopDust();
             }).AddTo(disposables);
+
+        /**
+         * This cannot be migrated into the ReactiveProperty since this needs to listen for the timer to reach 0
+         * and not for every changes in the value of the timer.
+         */
+
+        Observable.EveryFixedUpdate()
+            .Where(_ => timer > 0)
+            .Subscribe(_ =>
+            {
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                {
+                    StopShake();
+                }
+            });
     }
 
     void OnDestroy()
@@ -247,13 +279,46 @@ public class PlayerController : MonoBehaviour
             interactables.Remove(collision);
     }
 
+    protected float blinkDuration = 0.2f;
+    protected Color blinkColor = Color.red;
     public void OnHit(float damage, Vector2 knockback)
     {
+        StartCoroutine(BlinkSprite());
+        ShakeCamera();
+
         LockVelocity = true;
         int direction = IsFacingRight ? -1 : 1;
         rb.velocity = new Vector2(knockback.x * direction, rb.velocity.y + knockback.y);
         LockVelocity = false;
     }
+
+    public void ShakeCamera()
+    {
+        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _cbmcp.m_AmplitudeGain = shakeIntensity;
+
+        timer = shakeTime;
+    }
+
+    void StopShake()
+    {
+        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _cbmcp.m_AmplitudeGain = 0f;
+
+        timer = 0f;
+    }
+
+    private IEnumerator BlinkSprite()
+    {
+        Color originalColor = spriteRenderer.color;
+
+        spriteRenderer.color = blinkColor;
+
+        yield return new WaitForSeconds(blinkDuration);
+
+        spriteRenderer.color = originalColor;
+    }
+
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (!context.started)

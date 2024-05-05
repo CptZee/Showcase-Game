@@ -5,16 +5,8 @@ using UniRx;
 
 public class Damageable : MonoBehaviour, IDamageable
 {
+    [SerializeField]
     private UnityEvent<float, Vector2> damageableHit;
-    [SerializeField]
-    [Tooltip("The virtual camera for the screen effects.")]
-    private CinemachineVirtualCamera virtualCamera;
-    [SerializeField]
-    [Tooltip("The intensity of the screen shake.")]
-    private float shakeIntensity = 1f;
-    [Tooltip("The duration of the screen shake.")]
-    [SerializeField]
-    private float shakeTime = 0.5f;
     [Tooltip("The current health of the object.")]
     [SerializeField]
     private float _currentHealth = 20;
@@ -67,7 +59,6 @@ public class Damageable : MonoBehaviour, IDamageable
 
     void Start()
     {
-        StopShake();
         hp.Value = _currentHealth;
 
         /**
@@ -75,7 +66,7 @@ public class Damageable : MonoBehaviour, IDamageable
          * and not for every changes in the value of the timer.
          */
 
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25))
+        Observable.EveryFixedUpdate()
             .Where(_ => _isInvincible)
             .Subscribe(_ =>
             {
@@ -86,17 +77,6 @@ public class Damageable : MonoBehaviour, IDamageable
                 }
 
                 timeSinceHit += Time.deltaTime;
-            });
-
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25))
-            .Where(_ => timer > 0)
-            .Subscribe(_ =>
-            {
-                timer -= Time.deltaTime;
-                if (timer <= 0)
-                {
-                    StopShake();
-                }
             });
 
     }
@@ -110,8 +90,6 @@ public class Damageable : MonoBehaviour, IDamageable
 
             animator.SetTrigger(StaticStrings.hitTrigger);
             damageableHit?.Invoke(damage, knockback);
-
-            ShakeCamera();
 
             return true;
         }
@@ -130,21 +108,5 @@ public class Damageable : MonoBehaviour, IDamageable
             return true;
         }
         return false;
-    }
-
-    public void ShakeCamera()
-    {
-        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        _cbmcp.m_AmplitudeGain = shakeIntensity;
-
-        timer = shakeTime;
-    }
-
-    void StopShake()
-    {
-        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        _cbmcp.m_AmplitudeGain = 0f;
-
-        timer = 0f;
     }
 }

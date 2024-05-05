@@ -16253,6 +16253,30 @@ PrefabInstance:
       propertyPath: virtualCamera
       value: 
       objectReference: {fileID: 1945147544}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1812020473}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnHit
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527829246876893319, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: damageableHit.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5100019196314104479, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.65
@@ -16297,6 +16321,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5776091606784387042, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
+      propertyPath: virtualCamera
+      value: 
+      objectReference: {fileID: 1945147544}
     - target: {fileID: 5776091606784387042, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
       propertyPath: castFilter.useLayerMask
       value: 1
