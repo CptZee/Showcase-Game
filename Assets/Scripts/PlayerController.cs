@@ -258,7 +258,6 @@ public class PlayerController : MonoBehaviour
 
     void StopDust()
     {
-        Debug.Log("Stopping dust");
         dust.Stop();
     }
 }

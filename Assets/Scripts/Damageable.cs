@@ -69,11 +69,13 @@ public class Damageable : MonoBehaviour, IDamageable
         StopShake();
         Observable.EveryUpdate()
             .Where(_ => isInvincible)
-            .Where(_ => timeSinceHit > invincibilityDuration)
             .Subscribe(_ =>
             {
-                isInvincible = false;
-                timeSinceHit = 0;
+                if (timeSinceHit > invincibilityDuration)
+                {
+                    isInvincible = false;
+                    timeSinceHit = 0;
+                }
 
                 timeSinceHit += Time.deltaTime;
             });

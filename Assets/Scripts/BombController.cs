@@ -51,6 +51,7 @@ public class BombController : MonoBehaviour, IInteractable
         animator.SetTrigger(StaticStrings.explodeTrigger);
         playerController.CanMove = false;
         
+        Debug.Log("Player hit by bomb");
         playerController.GetComponent<IDamageable>().TakeDamage(damageAmount, new Vector2(4, 2));
 
         Observable.Timer(System.TimeSpan.FromSeconds(0.2f))
