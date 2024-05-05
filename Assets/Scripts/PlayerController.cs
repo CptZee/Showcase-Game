@@ -143,7 +143,7 @@ public class PlayerController : MonoBehaviour
             this.hp.Value = hp;
         }).AddTo(disposables);
 
-        Observable.EveryFixedUpdate()
+        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
             .Where(_ => CanMove)
             .Where(_ => !LockVelocity)
             .Subscribe(_ =>
@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
                 animator.SetFloat(StaticStrings.yVelocity, rb.velocity.y);
             }).AddTo(disposables);
 
-        Observable.EveryFixedUpdate()
+        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
             .Where(_ => !IsMoving)
             .Subscribe(_ =>
             {

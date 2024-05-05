@@ -49,7 +49,7 @@ public class HealthPotController : MonoBehaviour, IInteractable
 
         playerController.GetComponent<IDamageable>().Heal(healAmount);
 
-        Observable.EveryFixedUpdate()
+        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
             .Subscribe(_ =>
             {
                 timeElapsed += Time.deltaTime;
