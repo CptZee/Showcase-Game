@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
-        if (moveInput.x == 0)
+        if (moveInput.x < 0.5f && moveInput.x > -0.5f)
         {
             IsMoving = false;
             return; //Ignore y inputs (We are only listening for x inputs)
@@ -223,5 +223,14 @@ public class PlayerController : MonoBehaviour
         int direction = IsFacingRight ? -1 : 1;
         rb.velocity = new Vector2(knockback.x * direction, rb.velocity.y + knockback.y);
         LockVelocity = false;
+    }
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (!context.started)
+            return;
+        if (!touchingDirections.IsGrounded)
+            return;
+
+        animator.SetTrigger(StaticStrings.attackTrigger);
     }
 }

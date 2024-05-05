@@ -156,7 +156,19 @@ MonoBehaviour:
     m_ActionId: e5d19143-94c0-4d29-a503-fec36421a489
     m_ActionName: Player/Look[/Mouse/delta]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5776091606784387042}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnAttack
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: c2344d67-275d-4628-bc4a-ce9cede084e7
     m_ActionName: Player/Fire[/Mouse/leftButton]
   - m_PersistentCalls:
