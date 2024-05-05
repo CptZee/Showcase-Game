@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UniRx;
 
-[RequireComponent(typeof(TouchingDirections))]
+[RequireComponent(typeof(TouchingDirections), typeof(Damageable))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     protected Animator animator;
     protected CompositeDisposable disposables;
     protected TouchingDirections touchingDirections;
+    protected Damageable damageable;
 
     public int Coins
     {
@@ -91,6 +92,8 @@ public class PlayerController : MonoBehaviour
                 return 0;
             if (!IsMoving)
                 return 0;
+            if (!damageable.IsAlive)
+                return 0;
             if (!touchingDirections.IsGrounded)
             {
                 if (!touchingDirections.IsOnWall)
@@ -112,6 +115,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         touchingDirections = GetComponent<TouchingDirections>();
+        damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
         _coins = PlayerPrefs.GetInt("Coins", 0);
     }
@@ -156,6 +160,8 @@ public class PlayerController : MonoBehaviour
 
     private void SetFacingDirection(Vector2 moveInput)
     {
+        if (!damageable.IsAlive)
+            return;
         if (moveInput.x > 0 && !IsFacingRight)
         {
             // Face the right
