@@ -24,14 +24,14 @@ public class Damageable : MonoBehaviour, IDamageable
     [SerializeField]
     private bool _isAlive = true;
     [SerializeField]
-    private bool isInvincible = false;
+    private bool _isInvincible = false;
     [SerializeField]
     private float invincibilityDuration = 0.25f;
     protected float timeSinceHit;
-
-    protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
     public ReactiveProperty<float> hp = new ReactiveProperty<float>();
+    private ReactiveProperty<float> timer = new ReactiveProperty<float>();
+    private ReactiveProperty<bool> isInvincible = new ReactiveProperty<bool>();
 
     public float MaxHealth
     {
@@ -70,37 +70,39 @@ public class Damageable : MonoBehaviour, IDamageable
     {
         StopShake();
         hp.Value = _currentHealth;
-        Observable.EveryUpdate()
-            .Where(_ => isInvincible)
-            .Subscribe(_ =>
-            {
-                if (timeSinceHit > invincibilityDuration)
-                {
-                    isInvincible = false;
-                    timeSinceHit = 0;
-                }
+        isInvincible.Value = _isInvincible;
 
-                timeSinceHit += Time.deltaTime;
-            });
-        Observable.EveryFixedUpdate()
-            .Where(_ => timer > 0)
-            .Subscribe(_ =>
+        isInvincible.Subscribe(isInvincible =>
+        {
+            _isInvincible = isInvincible;
+
+            if (timeSinceHit > invincibilityDuration)
             {
-                timer -= Time.deltaTime;
-                if (timer <= 0)
-                {
-                    StopShake();
-                }
-            });
+                isInvincible = false;
+                timeSinceHit = 0;
+            }
+
+            timeSinceHit += Time.deltaTime;
+        });
+
+
+        timer.Subscribe(_ =>
+        {
+            if (timer.Value <= 0)
+            {
+                StopShake();
+            }
+            timer.Value -= Time.deltaTime;
+        });
 
     }
 
     public bool TakeDamage(float damage, Vector2 knockback)
     {
-        if (IsAlive && !isInvincible)
+        if (IsAlive && !isInvincible.Value)
         {
             CurrentHealth -= damage;
-            isInvincible = true;
+            isInvincible.Value = true;
 
             animator.SetTrigger(StaticStrings.hitTrigger);
             damageableHit?.Invoke(damage, knockback);
