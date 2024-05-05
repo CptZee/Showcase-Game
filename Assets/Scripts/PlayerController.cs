@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     protected CompositeDisposable disposables;
     protected TouchingDirections touchingDirections;
     protected Damageable damageable;
+    protected ParticleSystem dust;
 
     public int Coins
     {
@@ -115,6 +116,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         touchingDirections = GetComponent<TouchingDirections>();
+        dust = GetComponentInChildren<ParticleSystem>();
         damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
         _coins = PlayerPrefs.GetInt("Coins", 0);
@@ -136,6 +138,13 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(moveInput.x * CurrentMoveSpeed, rb.velocity.y);
                 animator.SetFloat(StaticStrings.yVelocity, rb.velocity.y);
             }).AddTo(disposables);
+
+        Observable.EveryFixedUpdate()
+            .Where(_ => !IsMoving)
+            .Subscribe(_ =>
+            {
+                StopDust();
+            }).AddTo(disposables);
     }
 
     void OnDestroy()
@@ -153,6 +162,9 @@ public class PlayerController : MonoBehaviour
         }
         if (!CanMove)
             return;
+
+        if (touchingDirections.IsGrounded)
+            CreateDust();
         IsMoving = moveInput != Vector2.zero;
 
         SetFacingDirection(moveInput);
@@ -183,7 +195,6 @@ public class PlayerController : MonoBehaviour
 
         if (!CanMove)
             return;
-
         animator.SetTrigger(StaticStrings.jumpTrigger);
         rb.velocity = new Vector2(rb.velocity.x, jumpImpulse);
     }
@@ -238,5 +249,16 @@ public class PlayerController : MonoBehaviour
             return;
 
         animator.SetTrigger(StaticStrings.attackTrigger);
+    }
+
+    void CreateDust()
+    {
+        dust.Play();
+    }
+
+    void StopDust()
+    {
+        Debug.Log("Stopping dust");
+        dust.Stop();
     }
 }

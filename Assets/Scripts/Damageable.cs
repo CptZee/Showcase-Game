@@ -1,10 +1,20 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
+using UniRx;
 
 public class Damageable : MonoBehaviour, IDamageable
 {
-    public UnityEvent<float, Vector2> damageableHit;
+    private UnityEvent<float, Vector2> damageableHit;
+    [SerializeField]
+    [Tooltip("The virtual camera for the screen effects.")]
+    private CinemachineVirtualCamera virtualCamera;
+    [SerializeField]
+    [Tooltip("The intensity of the screen shake.")]
+    private float shakeIntensity = 1f;
+    [Tooltip("The duration of the screen shake.")]
+    [SerializeField]
+    private float shakeTime = 0.5f;
     protected Animator animator;
     [SerializeField]
     private float _maxHealth = 20;
@@ -17,6 +27,9 @@ public class Damageable : MonoBehaviour, IDamageable
     [SerializeField]
     private float invincibilityDuration = 0.25f;
     protected float timeSinceHit;
+
+    protected float timer;
+    protected CinemachineBasicMultiChannelPerlin _cbmcp;
 
     public float MaxHealth
     {
@@ -51,18 +64,30 @@ public class Damageable : MonoBehaviour, IDamageable
         animator = GetComponent<Animator>();
     }
 
-    void Update()
+    void Start()
     {
-        if (isInvincible)
-        {
-            if(timeSinceHit > invincibilityDuration)
+        StopShake();
+        Observable.EveryUpdate()
+            .Where(_ => isInvincible)
+            .Where(_ => timeSinceHit > invincibilityDuration)
+            .Subscribe(_ =>
             {
                 isInvincible = false;
                 timeSinceHit = 0;
-            }
 
-            timeSinceHit += Time.deltaTime;
-        }
+                timeSinceHit += Time.deltaTime;
+            });
+        Observable.EveryFixedUpdate()
+            .Where(_ => timer > 0)
+            .Subscribe(_ =>
+            {
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                {
+                    StopShake();
+                }
+            });
+
     }
 
     public bool TakeDamage(float damage, Vector2 knockback)
@@ -75,6 +100,8 @@ public class Damageable : MonoBehaviour, IDamageable
             animator.SetTrigger(StaticStrings.hitTrigger);
             damageableHit?.Invoke(damage, knockback);
 
+            ShakeCamera();
+
             return true;
         }
         return false;
@@ -85,12 +112,28 @@ public class Damageable : MonoBehaviour, IDamageable
         if (IsAlive)
         {
             CurrentHealth += healAmount;
-            if(CurrentHealth > MaxHealth)
+            if (CurrentHealth > MaxHealth)
             {
                 CurrentHealth = MaxHealth;
             }
             return true;
         }
         return false;
+    }
+
+    public void ShakeCamera()
+    {
+        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _cbmcp.m_AmplitudeGain = shakeIntensity;
+
+        timer = shakeTime;
+    }
+
+    void StopShake()
+    {
+        CinemachineBasicMultiChannelPerlin _cbmcp = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _cbmcp.m_AmplitudeGain = 0f;
+
+        timer = 0f;
     }
 }
