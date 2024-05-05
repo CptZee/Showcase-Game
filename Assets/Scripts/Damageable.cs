@@ -28,9 +28,9 @@ public class Damageable : MonoBehaviour, IDamageable
     [SerializeField]
     private float invincibilityDuration = 0.25f;
     protected float timeSinceHit;
+    protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
     public ReactiveProperty<float> hp = new ReactiveProperty<float>();
-    private ReactiveProperty<float> timer = new ReactiveProperty<float>();
     private ReactiveProperty<bool> isInvincible = new ReactiveProperty<bool>();
 
     public float MaxHealth
@@ -75,7 +75,7 @@ public class Damageable : MonoBehaviour, IDamageable
         isInvincible.Subscribe(isInvincible =>
         {
             _isInvincible = isInvincible;
-
+            
             if (timeSinceHit > invincibilityDuration)
             {
                 isInvincible = false;
@@ -85,15 +85,21 @@ public class Damageable : MonoBehaviour, IDamageable
             timeSinceHit += Time.deltaTime;
         });
 
+        /**
+         * This cannot be migrated into the ReactiveProperty since this needs to listen for the timer to reach 0
+         * and not for every changes in the value of the timer.
+         */
 
-        timer.Subscribe(_ =>
-        {
-            if (timer.Value <= 0)
+        Observable.EveryFixedUpdate()
+            .Where(_ => timer > 0)
+            .Subscribe(_ =>
             {
-                StopShake();
-            }
-            timer.Value -= Time.deltaTime;
-        });
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                {
+                    StopShake();
+                }
+            });
 
     }
 
