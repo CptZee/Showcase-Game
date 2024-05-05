@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,7 +38,6 @@ public class PlayerController : MonoBehaviour
     protected TouchingDirections touchingDirections;
     protected Damageable damageable;
     protected ParticleSystem dust;
-    protected SpriteRenderer spriteRenderer;
     protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
 
@@ -139,7 +137,6 @@ public class PlayerController : MonoBehaviour
         touchingDirections = GetComponent<TouchingDirections>();
         dust = GetComponentInChildren<ParticleSystem>();
         damageable = GetComponent<Damageable>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         disposables = new CompositeDisposable();
         coins.Value = PlayerPrefs.GetInt("Coins", 0);
     }
@@ -279,11 +276,8 @@ public class PlayerController : MonoBehaviour
             interactables.Remove(collision);
     }
 
-    protected float blinkDuration = 0.2f;
-    protected Color blinkColor = Color.red;
     public void OnHit(float damage, Vector2 knockback)
     {
-        StartCoroutine(BlinkSprite());
         ShakeCamera();
 
         LockVelocity = true;
@@ -306,17 +300,6 @@ public class PlayerController : MonoBehaviour
         _cbmcp.m_AmplitudeGain = 0f;
 
         timer = 0f;
-    }
-
-    private IEnumerator BlinkSprite()
-    {
-        Color originalColor = spriteRenderer.color;
-
-        spriteRenderer.color = blinkColor;
-
-        yield return new WaitForSeconds(blinkDuration);
-
-        spriteRenderer.color = originalColor;
     }
 
     public void OnAttack(InputAction.CallbackContext context)

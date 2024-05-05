@@ -53,7 +53,7 @@ public class BombController : MonoBehaviour, IInteractable
         
         playerController.GetComponent<IDamageable>().TakeDamage(damageAmount, new Vector2(4, 2));
 
-        Observable.Timer(System.TimeSpan.FromSeconds(0.2f))
+        Observable.EveryFixedUpdate()
             .Subscribe(_ =>
             {
                 playerController.CanMove = true; 

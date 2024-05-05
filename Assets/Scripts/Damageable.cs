@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Cinemachine;
 using UniRx;
+using System.Collections;
 
 public class Damageable : MonoBehaviour, IDamageable
 {
@@ -23,6 +24,10 @@ public class Damageable : MonoBehaviour, IDamageable
     protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
     public ReactiveProperty<float> hp = new ReactiveProperty<float>();
+    protected SpriteRenderer spriteRenderer;
+    protected float blinkDuration = 0.2f;
+    protected Color hurtBlinkColor = Color.red;
+    protected Color healBlinkColor = Color.green;
 
     public float MaxHealth
     {
@@ -55,6 +60,7 @@ public class Damageable : MonoBehaviour, IDamageable
     void Awake()
     {
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Start()
@@ -91,9 +97,21 @@ public class Damageable : MonoBehaviour, IDamageable
             animator.SetTrigger(StaticStrings.hitTrigger);
             damageableHit?.Invoke(damage, knockback);
 
+            StartCoroutine(HurtBlinkSprite());
             return true;
         }
         return false;
+    }
+
+    private IEnumerator HurtBlinkSprite()
+    {
+        Color originalColor = spriteRenderer.color;
+
+        spriteRenderer.color = hurtBlinkColor;
+
+        yield return new WaitForSeconds(blinkDuration);
+
+        spriteRenderer.color = originalColor;
     }
 
     public bool Heal(float healAmount)
@@ -105,8 +123,20 @@ public class Damageable : MonoBehaviour, IDamageable
             {
                 CurrentHealth = MaxHealth;
             }
+            StartCoroutine(HealBlinkSprite());
             return true;
         }
         return false;
+    }
+
+    private IEnumerator HealBlinkSprite()
+    {
+        Color originalColor = spriteRenderer.color;
+
+        spriteRenderer.color = healBlinkColor;
+
+        yield return new WaitForSeconds(blinkDuration);
+
+        spriteRenderer.color = originalColor;
     }
 }

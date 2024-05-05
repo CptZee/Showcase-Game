@@ -1,5 +1,6 @@
 using UnityEngine;
 using UniRx;
+using UniRx.Triggers;
 
 public class HealthPotController : MonoBehaviour, IInteractable
 {
@@ -40,7 +41,7 @@ public class HealthPotController : MonoBehaviour, IInteractable
         if (HasInteracted)
             return;
         HasInteracted = true;
-        
+
         HasInteracted = true;
         timeElapsed = 0f;
         spriteRenderer = animator.GetComponent<SpriteRenderer>();
@@ -49,7 +50,7 @@ public class HealthPotController : MonoBehaviour, IInteractable
 
         playerController.GetComponent<IDamageable>().Heal(healAmount);
 
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
+        Observable.EveryFixedUpdate()
             .Subscribe(_ =>
             {
                 timeElapsed += Time.deltaTime;
