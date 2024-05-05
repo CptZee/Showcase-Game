@@ -14,9 +14,6 @@ public class PlayerController : MonoBehaviour
     private float airSpeed = 3f;
     [SerializeField]
     [Tooltip("DEBUG ONLY - DO NOT EDIT")]
-    private int _coins;
-    [SerializeField]
-    [Tooltip("DEBUG ONLY - DO NOT EDIT")]
     private bool _isFacingRight = true;
     [SerializeField]
     [Tooltip("DEBUG ONLY - DO NOT EDIT")]
@@ -32,12 +29,22 @@ public class PlayerController : MonoBehaviour
     protected Damageable damageable;
     protected ParticleSystem dust;
 
+    public ReactiveProperty<int> coins = new ReactiveProperty<int>();
+    /**
+    * The calculations of this property is not really here, I just proxied it in this class
+    * to adhere to the instructions of the exam.
+    *
+    * I would normally place it in the Damageable class and subscribe to it in the UIController class.
+    * This is so that I can reuse the Damageable class in other objects that can take damage. E.g enemies, destructible objects, etc.
+    */
+    public ReactiveProperty<float> hp = new ReactiveProperty<float>();
+
     public int Coins
     {
-        get { return _coins; }
+        get { return coins.Value; }
         set
         {
-            _coins = value;
+            coins.Value = value;
             PlayerPrefs.SetInt("Coins", value);
         }
     }
@@ -119,7 +126,7 @@ public class PlayerController : MonoBehaviour
         dust = GetComponentInChildren<ParticleSystem>();
         damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
-        _coins = PlayerPrefs.GetInt("Coins", 0);
+        coins.Value = PlayerPrefs.GetInt("Coins", 0);
     }
 
     /**
@@ -130,6 +137,12 @@ public class PlayerController : MonoBehaviour
      */
     void Start()
     {
+        // Again, proxy the hp value to the Damageable class
+        damageable.hp.Subscribe(hp =>
+        {
+            this.hp.Value = hp;
+        }).AddTo(disposables);
+
         Observable.EveryFixedUpdate()
             .Where(_ => CanMove)
             .Where(_ => !LockVelocity)
@@ -258,7 +271,6 @@ public class PlayerController : MonoBehaviour
 
     void StopDust()
     {
-        Debug.Log("Stopping dust");
         dust.Stop();
     }
 }

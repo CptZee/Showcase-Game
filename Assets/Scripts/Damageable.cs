@@ -15,11 +15,12 @@ public class Damageable : MonoBehaviour, IDamageable
     [Tooltip("The duration of the screen shake.")]
     [SerializeField]
     private float shakeTime = 0.5f;
+    [Tooltip("The current health of the object.")]
+    [SerializeField]
+    private float _currentHealth = 20;
     protected Animator animator;
     [SerializeField]
     private float _maxHealth = 20;
-    [SerializeField]
-    private float _currentHealth = 20;
     [SerializeField]
     private bool _isAlive = true;
     [SerializeField]
@@ -30,6 +31,7 @@ public class Damageable : MonoBehaviour, IDamageable
 
     protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
+    public ReactiveProperty<float> hp = new ReactiveProperty<float>();
 
     public float MaxHealth
     {
@@ -39,11 +41,11 @@ public class Damageable : MonoBehaviour, IDamageable
 
     public float CurrentHealth
     {
-        get { return _currentHealth; }
+        get { return hp.Value; }
         set
         {
-            _currentHealth = value;
-            if (_currentHealth <= 0)
+            hp.Value = value;
+            if (hp.Value <= 0)
             {
                 IsAlive = false;
             }
@@ -67,13 +69,16 @@ public class Damageable : MonoBehaviour, IDamageable
     void Start()
     {
         StopShake();
+        hp.Value = _currentHealth;
         Observable.EveryUpdate()
             .Where(_ => isInvincible)
-            .Where(_ => timeSinceHit > invincibilityDuration)
             .Subscribe(_ =>
             {
-                isInvincible = false;
-                timeSinceHit = 0;
+                if (timeSinceHit > invincibilityDuration)
+                {
+                    isInvincible = false;
+                    timeSinceHit = 0;
+                }
 
                 timeSinceHit += Time.deltaTime;
             });

@@ -32,12 +32,8 @@ public class UIController : MonoBehaviour
             return;
         }
 
-        Observable.EveryFixedUpdate()
-            .Subscribe(_ =>
-            {
-                HPText.text = playerController.GetComponent<IDamageable>().CurrentHealth.ToString() + " / " + playerController.GetComponent<IDamageable>().MaxHealth.ToString();
-                cointText.text = playerController.Coins.ToString();
-            }).AddTo(disposables);
+        playerController.coins.Subscribe(coins => cointText.text = coins.ToString()).AddTo(disposables);
+        playerController.hp.Subscribe(hp => HPText.text = hp.ToString()).AddTo(disposables);
 
     }
 

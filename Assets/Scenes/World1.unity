@@ -700,7 +700,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 4
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -16304,22 +16304,6 @@ PrefabInstance:
     - target: {fileID: 5776091606784387042, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
       propertyPath: castFilter.layerMask.m_Bits
       value: 2048
-      objectReference: {fileID: 0}
-    - target: {fileID: 8301045057017389770, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
-      propertyPath: looping
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8301045057017389770, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
-      propertyPath: lengthInSec
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8301045057017389770, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
-      propertyPath: startDelay.scalar
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8301045057017389770, guid: 46c4eb76016703344b162a955a8b348d, type: 3}
-      propertyPath: EmissionModule.rateOverTime.scalar
-      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
