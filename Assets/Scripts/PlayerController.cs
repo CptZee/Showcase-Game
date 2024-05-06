@@ -40,7 +40,8 @@ public class PlayerController : MonoBehaviour
     protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
 
-    public ReactiveProperty<int> coins = new ReactiveProperty<int>();
+    public Subject<int> coins = new Subject<int>();
+    private int _coins;
     /**
     * The calculations of this property is not really here, I just proxied it in this class
     * to adhere to the instructions of the exam.
@@ -48,15 +49,27 @@ public class PlayerController : MonoBehaviour
     * I would normally place it in the Damageable class and subscribe to it in the UIController class.
     * This is so that I can reuse the Damageable class in other objects that can take damage. E.g enemies, destructible objects, etc.
     */
-    public ReactiveProperty<float> hp = new ReactiveProperty<float>();
+    private float _hp;
+    public Subject<float> hp = new Subject<float>();
 
     public int Coins
     {
-        get { return coins.Value; }
+        get { return _coins; }
         set
         {
-            coins.Value = value;
-            PlayerPrefs.SetInt("Coins", value);
+            _coins = value;
+            PlayerPrefs.SetInt("Coins", _coins);
+            coins.OnNext(_coins);
+        }
+    }
+
+    public float HP
+    {
+        get { return _hp; }
+        set
+        {
+            _hp = value;
+            hp.OnNext(_hp);
         }
     }
 
@@ -136,8 +149,7 @@ public class PlayerController : MonoBehaviour
         touchingDirections = GetComponent<TouchingDirections>();
         damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
-        coins.Value = PlayerPrefs.GetInt("Coins", 0);
-        hp.Value = 20;
+        HP = 20;
     }
 
     /**
@@ -149,9 +161,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         StopShake();
-        damageable.hp.Subscribe(hp =>
+        Coins = PlayerPrefs.GetInt("Coins", 0);
+        damageable.hp.Subscribe(value =>
         {
-            this.hp.Value = hp;
+            HP = value;
         }).AddTo(disposables);
 
         Observable.Interval(System.TimeSpan.FromSeconds(0.1f))
