@@ -134,7 +134,6 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         touchingDirections = GetComponent<TouchingDirections>();
-        dust = GetComponentInChildren<ParticleSystem>();
         damageable = GetComponent<Damageable>();
         disposables = new CompositeDisposable();
         coins.Value = PlayerPrefs.GetInt("Coins", 0);
