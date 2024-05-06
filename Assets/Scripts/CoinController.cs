@@ -60,6 +60,8 @@ public class CoinController : MonoBehaviour, IInteractable
             {
                 timeElapsed += Time.deltaTime;
                 float newAlpha = startColor.a * (1 - timeElapsed / fadeTime);
+                float newY = objToRemove.transform.position.y + Time.deltaTime;
+                objToRemove.transform.position = new Vector3(objToRemove.transform.position.x, newY, objToRemove.transform.position.z);
                 spriteRenderer.color = new Color(startColor.r, startColor.g, startColor.b, newAlpha);
 
                 if (timeElapsed > fadeTime)
