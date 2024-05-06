@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
     protected CompositeDisposable disposables;
     protected TouchingDirections touchingDirections;
     protected Damageable damageable;
-    protected ParticleSystem dust;
     protected float timer;
     protected CinemachineBasicMultiChannelPerlin _cbmcp;
 
@@ -165,13 +164,6 @@ public class PlayerController : MonoBehaviour
                 animator.SetFloat(StaticStrings.yVelocity, rb.velocity.y);
             }).AddTo(disposables);
 
-        Observable.Interval(System.TimeSpan.FromSeconds(0.25f))
-            .Where(_ => !IsMoving)
-            .Subscribe(_ =>
-            {
-                StopDust();
-            }).AddTo(disposables);
-
         /**
          * This cannot be migrated into the ReactiveProperty since this needs to listen for the timer to reach 0
          * and not for every changes in the value of the timer.
@@ -205,8 +197,6 @@ public class PlayerController : MonoBehaviour
         if (!CanMove)
             return;
 
-        if (touchingDirections.IsGrounded)
-            CreateDust();
         IsMoving = moveInput != Vector2.zero;
 
         SetFacingDirection(moveInput);
@@ -310,15 +300,5 @@ public class PlayerController : MonoBehaviour
             return;
 
         animator.SetTrigger(StaticStrings.attackTrigger);
-    }
-
-    void CreateDust()
-    {
-        dust.Play();
-    }
-
-    void StopDust()
-    {
-        dust.Stop();
     }
 }
